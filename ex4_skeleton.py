@@ -131,8 +131,9 @@ class DnsHandler(object):
 
         dns_query = IP(dst=NETWORK_DNS_SERVER_IP) / UDP(sport=scapy.RandShort(), dport=53) / DNS(rd=1, id=transaction_id, qd=pkt[DNS].qd)
 
+        # TODO: fix this, nothing is returned
         # Send the DNS query to 8.8.8.8 and wait for the response
-        dns_response = sr1(dns_query, verbose=0, timeout=2)
+        dns_response = sr1(dns_query, verbose=0, timeout=.2)
 
         # TODO: remove this!!
         if dns_response is None:
