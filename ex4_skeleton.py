@@ -52,6 +52,7 @@ class ArpSpoofer(object):
         if self.target_mac is None:
             # send ARP request to target_ip
             ARP_request = ARP(pdst=self.target_ip)
+            print("waiting for arp response for target MAC")
             response = sr1(ARP_request, iface=IFACE)
             self.target_mac = response.hwsrc
             self.target_mac = getmacbyip(self.target_ip)
