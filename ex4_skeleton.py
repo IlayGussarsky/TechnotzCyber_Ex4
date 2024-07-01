@@ -134,6 +134,9 @@ class DnsHandler(object):
         # Send the DNS query to 8.8.8.8 and wait for the response
         dns_response = sr1(dns_query, verbose=0, timeout=2)
 
+        # TODO: remove this!!
+        if dns_response is None:
+            return pkt
         # Modify the DNS response packet to have the original request's source IP and port
         response_pkt = IP(src=ip_dst, dst=ip_src) / \
                        UDP(sport=port_dst, dport=port_src) / \
