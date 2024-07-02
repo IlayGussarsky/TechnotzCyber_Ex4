@@ -122,10 +122,10 @@ class DnsHandler(object):
         @param pkt DNS request from target.
         @return DNS response to pkt, source IP changed.
         """
-        ip_src = pkt[IP].dst  # Original destination IP
-        ip_dst = pkt[IP].src  # Original source IP
-        port_src = pkt[UDP].dport  # Original destination port
-        port_dst = pkt[UDP].sport  # Original source port
+        ip_src = pkt[IP].src  # Original destination IP
+        ip_dst = pkt[IP].dst  # Original source IP
+        port_src = pkt[UDP].sport  # Original destination port
+        port_dst = pkt[UDP].dport  # Original source port
         transaction_id = pkt[DNS].id  # Transaction ID
         query_name = pkt[DNS].qd.qname  # Query name
 
@@ -146,13 +146,13 @@ class DnsHandler(object):
         if dns_response is None:
             print("err")
             return pkt
-        # dns_response.src = ip_dst
-        # dns_response.dst = ip_src
+        dns_response.src = ip_dst
+        dns_response.dst = ip_src
         # Modify the DNS response packet to have the original request's source IP and port
-        response_pkt = IP(src=ip_dst, dst=ip_src) / \
-                       UDP(sport=port_dst, dport=port_src) / \
-                       DNS(id=dns_response[DNS].id, qr=1, aa=dns_response[DNS].aa, qd=qd,
-                           an=dns_response[DNS].an)
+        # response_pkt = IP(src=ip_dst, dst=ip_src) / \
+        #                UDP(sport=port_dst, dport=port_src) / \
+        #                DNS(id=dns_response[DNS].id, qr=1, aa=dns_response[DNS].aa, qd=qd,
+        #                    an=dns_response[DNS].an)
 
         return response_pkt
 
