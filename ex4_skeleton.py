@@ -135,8 +135,9 @@ class DnsHandler(object):
 
         # TODO: fix this, nothing is returned
         # Send the DNS query to 8.8.8.8 and wait for the response
-        dns_response = sr1(dns_query, verbose=0, timeout=.2)
-
+        print(f"sr1: {sr1}")
+        dns_response = sr1(dns_query, verbose=0)
+        print(f"dns response: {dns_response}")
         # TODO: remove this!!
         if dns_response is None:
             return pkt
@@ -202,12 +203,11 @@ class DnsHandler(object):
         if query_name in SPOOF_DICT:
             print("Spoofing DNS response for", query_name)
             response_pkt: scapy.packet.Packet = self.get_spoofed_dns_response(pkt, SPOOF_DICT[query_name])
-            scapy.send(response_pkt)
         else:
-            print("[Not really, for debug purposes only] Forwarding DNS request for", query_name, "to",
+            print("Forwarding DNS request for", query_name, "to",
                   REAL_DNS_SERVER_IP)
-            # response_pkt: scapy.packet.Packet = self.get_real_dns_response(pkt)
-            # scapy.send(response_pkt)
+            response_pkt: scapy.packet.Packet = self.get_real_dns_response(pkt)
+        scapy.send(response_pkt)
 
     def run(self) -> None:
         """
