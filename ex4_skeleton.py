@@ -129,7 +129,7 @@ class DnsHandler(object):
         transaction_id = pkt[DNS].id  # Transaction ID
         query_name = pkt[DNS].qd.qname  # Query name
 
-        dns_query = IP(dst=REAL_DNS_SERVER_IP) / UDP(sport=scapy.RandShort(), dport=53) / DNS(rd=1,
+        dns_query = IP(dst=REAL_DNS_SERVER_IP) / UDP(dport=53) / DNS(rd=1,
                                                                                                  id=transaction_id,
                                                                                                  qd=pkt[DNS].qd)
 
