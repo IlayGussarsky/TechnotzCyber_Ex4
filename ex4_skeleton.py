@@ -203,12 +203,12 @@ class DnsHandler(object):
         if query_name in SPOOF_DICT:
             print("Spoofing DNS response for", query_name)
             response_pkt: scapy.packet.Packet = self.get_spoofed_dns_response(pkt, SPOOF_DICT[query_name])
+            scapy.send(response_pkt)
         else:
             print("Forwarding DNS request for", query_name, "to",
                   REAL_DNS_SERVER_IP)
-            response_pkt: scapy.packet.Packet = self.get_real_dns_response(pkt)
-            print(response_pkt.show())
-        scapy.send(response_pkt)
+            # response_pkt: scapy.packet.Packet = self.get_real_dns_response(pkt)
+            # print(response_pkt.show())
 
     def run(self) -> None:
         """
