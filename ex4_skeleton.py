@@ -129,9 +129,10 @@ class DnsHandler(object):
         transaction_id = pkt[DNS].id  # Transaction ID
         query_name = pkt[DNS].qd.qname  # Query name
 
+        qd = DNSQR(qname=query_name, qtype=pkt[DNS].qd.qtype)
         dns_query = IP(dst=REAL_DNS_SERVER_IP) / UDP(dport=53) / DNS(rd=1,
-                                                                                     id=transaction_id,
-                                                                                     qd=pkt[DNS].qd)
+                                                                     id=transaction_id,
+                                                                     qd=qd)
 
         # TODO: fix this, nothing is returned
         # Send the DNS query to 8.8.8.8 and wait for the response
@@ -144,7 +145,7 @@ class DnsHandler(object):
         # Modify the DNS response packet to have the original request's source IP and port
         response_pkt = IP(src=ip_dst, dst=ip_src) / \
                        UDP(sport=port_dst, dport=port_src) / \
-                       DNS(id=dns_response[DNS].id, qr=1, aa=dns_response[DNS].aa, qd=dns_response[DNS].qd,
+                       DNS(id=dns_response[DNS].id, qr=1, aa=dns_response[DNS].aa, qd=qd,
                            an=dns_response[DNS].an)
 
         return response_pkt
