@@ -122,10 +122,10 @@ class DnsHandler(object):
         @param pkt DNS request from target.
         @return DNS response to pkt, source IP changed.
         """
-        ip_src = pkt[IP].dst  # Original destination IP
-        ip_dst = pkt[IP].src  # Original source IP
-        port_src = pkt[UDP].dport  # Original destination port
-        port_dst = pkt[UDP].sport  # Original source port
+        ip_src = pkt[IP].src  # Original destination IP
+        ip_dst = pkt[IP].dst  # Original source IP
+        port_src = pkt[UDP].sport  # Original destination port
+        port_dst = pkt[UDP].dport  # Original source port
         transaction_id = pkt[DNS].id  # Transaction ID
         query_name = pkt[DNS].qd.qname  # Query name
 
