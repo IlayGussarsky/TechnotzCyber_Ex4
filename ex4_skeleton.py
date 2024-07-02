@@ -138,8 +138,10 @@ class DnsHandler(object):
         # Send the DNS query to 8.8.8.8 and wait for the response
         # print(f"sr1: {sr1}")
         dns_response = sr1(dns_query, verbose=0)
+        print("_____")
         print(f"----dns response: {dns_response}")
-        print(f"----dns response: {dns_response.show()}")
+        dns_response.show()
+        print("_____")
         # TODO: remove this!!
         if dns_response is None:
             return pkt
