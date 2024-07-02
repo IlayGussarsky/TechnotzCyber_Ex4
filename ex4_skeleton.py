@@ -129,14 +129,14 @@ class DnsHandler(object):
         transaction_id = pkt[DNS].id  # Transaction ID
         query_name = pkt[DNS].qd.qname  # Query name
 
-        dns_query = IP(dst=REAL_DNS_SERVER_IP) / UDP(sport= port_dst, dport=53) / DNS(rd=1,
-                                                                                                 id=transaction_id,
-                                                                                                 qd=pkt[DNS].qd)
+        dns_query = IP(dst=REAL_DNS_SERVER_IP) / UDP(sport=port_dst, dport=53) / DNS(rd=1,
+                                                                                     id=transaction_id,
+                                                                                     qd=pkt[DNS].qd)
 
         # TODO: fix this, nothing is returned
         # Send the DNS query to 8.8.8.8 and wait for the response
         # print(f"sr1: {sr1}")
-        dns_response = sr1(dns_query, verbose=0)
+        dns_response = sr1(dns_query, verbose=0, timeout=10)
         # print(f"dns response: {dns_response}")
         # TODO: remove this!!
         if dns_response is None:
