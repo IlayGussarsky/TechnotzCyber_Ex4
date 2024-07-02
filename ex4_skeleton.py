@@ -135,9 +135,9 @@ class DnsHandler(object):
 
         # TODO: fix this, nothing is returned
         # Send the DNS query to 8.8.8.8 and wait for the response
-        print(f"sr1: {sr1}")
+        # print(f"sr1: {sr1}")
         dns_response = sr1(dns_query, verbose=0)
-        print(f"dns response: {dns_response}")
+        # print(f"dns response: {dns_response}")
         # TODO: remove this!!
         if dns_response is None:
             return pkt
@@ -208,7 +208,7 @@ class DnsHandler(object):
             print("Forwarding DNS request for", query_name, "to",
                   REAL_DNS_SERVER_IP)
             response_pkt: scapy.packet.Packet = self.get_real_dns_response(pkt)
-            print(response_pkt.show())
+            # print(response_pkt.show())
             scapy.send(response_pkt)
 
     def run(self) -> None:
