@@ -154,7 +154,7 @@ class DnsHandler(object):
                        DNS(id=dns_response[DNS].id, qr=1, aa=dns_response[DNS].aa, qd=qd,
                            an=dns_response[DNS].an)
 
-        return dns_response
+        return response_pkt
 
     def get_spoofed_dns_response(self, pkt: scapy.packet.Packet, to: str) -> scapy.packet.Packet:
         """
