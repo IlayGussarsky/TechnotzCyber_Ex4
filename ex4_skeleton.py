@@ -196,8 +196,8 @@ class DnsHandler(object):
             print("Forwarding DNS request for", query_name, "to",
                   REAL_DNS_SERVER_IP)
             response_pkt: scapy.packet.Packet = self.get_real_dns_response(pkt)
-            print(response_pkt.show())
-            print("______response pkt")
+            # print(response_pkt.show())
+            # print("______response pkt")
             response_pkt.show()
             scapy.send(response_pkt)
 
