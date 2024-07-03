@@ -136,8 +136,9 @@ class DnsHandler(object):
 
         dns_response = sr1(dns_query, verbose=0)
 
+        print(f'source port: {port_src}')
         # Create a new packet with the correct source and destination IP addresses
-        response_pkt = IP(src=ip_dst, dst=ip_src) / UDP(sport=port_dst, dport=port_src) / dns_response[DNS]
+        response_pkt = IP(src=ip_dst, dst=ip_src) / UDP(sport=53, dport=port_src) / dns_response[DNS]
 
         return response_pkt
 
