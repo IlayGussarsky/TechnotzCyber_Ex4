@@ -114,7 +114,6 @@ class DnsHandler(object):
         self.spoof_dict = spoof_dict
         self.real_dns_server_ip = REAL_DNS_SERVER_IP
 
-
     def get_real_dns_response(self, pkt: scapy.packet.Packet) -> scapy.packet.Packet:
         """
         Returns the real DNS response to the given DNS request.
@@ -130,35 +129,17 @@ class DnsHandler(object):
         port_dst = pkt[UDP].dport  # Original source port
         transaction_id = pkt[DNS].id  # Transaction ID
         query_name = pkt[DNS].qd.qname  # Query name
-
         qd = DNSQR(qname=query_name, qtype=pkt[DNS].qd.qtype)
         dns_query = IP(dst=REAL_DNS_SERVER_IP) / UDP(dport=53) / DNS(rd=1,
                                                                      id=transaction_id,
                                                                      qd=qd)
 
-
-        # TODO: fix this, nothing is returned
-        # Send the DNS query to 8.8.8.8 and wait for the response
-        # print(f"sr1: {sr1}")
         dns_response = sr1(dns_query, verbose=0)
-        print("_____")
-        print(f"----dns response: {dns_response}")
-        dns_response.show()
-        print("_____")
-        # TODO: remove this!!
-        if dns_response is None:
-            print("err")
-            return pkt
-        dns_response.src = ip_dst
-        dns_response.dst = ip_src
-        # Modify the DNS response packet to have the original request's source IP and port
-        # response_pkt = IP(src=ip_dst, dst=ip_src) / \
-        #                UDP(sport=port_dst, dport=port_src) / \
-        #                DNS(id=dns_response[DNS].id, qr=1, aa=dns_response[DNS].aa, qd=qd,
-        #                    an=dns_response[DNS].an)
 
-        return dns_response
+        # Create a new packet with the correct source and destination IP addresses
+        response_pkt = IP(src=ip_dst, dst=ip_src) / UDP(sport=port_dst, dport=port_src) / dns_response[DNS]
 
+        return response_pkt
 
     def get_spoofed_dns_response(self, pkt: scapy.packet.Packet, to: str) -> scapy.packet.Packet:
         """
