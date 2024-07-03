@@ -124,33 +124,26 @@ class DnsHandler(object):
         @param pkt DNS request from target.
         @return DNS response to pkt, source IP changed.
         """
-        ip_src = pkt[IP].src  # Original destination IP
-        ip_dst = pkt[IP].dst  # Original source IP
-        port_src = pkt[UDP].sport  # Original destination port
-        port_dst = pkt[UDP].dport  # Original source port
-        transaction_id = pkt[DNS].id  # Transaction ID
-        query_name = pkt[DNS].qd.qname  # Query name
+        print("DNSing")
+        # Create a new IP packet to send to the DNS server
+        ip = IP(dst='8.8.8.8')
+        udp = UDP(dport=53)
 
-        qd = DNSQR(qname=query_name, qtype=pkt[DNS].qd.qtype)
-        dns_query = IP(dst=REAL_DNS_SERVER_IP) / UDP(dport=53) / pkt[DNS]
+        # Forward the original DNS query to the real DNS server
+        dns_req = ip / udp / pkt[DNS]
+        dns_resp = sr1(dns_req, verbose=0, timeout=2)
 
-
-        # TODO: fix this, nothing is returned
-        # Send the DNS query to 8.8.8.8 and wait for the response
-        # print(f"sr1: {sr1}")
-        dns_response = sr1(dns_query, verbose=0)
-        print("_____")
-        print(f"----dns response from google: {dns_response}")
-        dns_response.show()
-        print("_____")
-        # TODO: remove this!!
-        if dns_response is None:
-            print("err")
-            return pkt
-        dns_response.src = ip_dst
-        dns_response.dst = ip_src
-
-        return dns_response
+        if dns_resp:
+            # Modify the source IP of the DNS response
+            print(dns_resp)
+            dns_resp[IP].src = NETWORK_DNS_SERVER_IP
+            dns_resp[IP].dst = pkt[IP].src
+            dns_resp[UDP].dport = pkt[UDP].sport
+            print(dns_resp)
+            return dns_resp
+        else:
+            print("No response from DNS server.")
+            return None
 
 
     def get_spoofed_dns_response(self, pkt: scapy.packet.Packet, to: str) -> scapy.packet.Packet:
