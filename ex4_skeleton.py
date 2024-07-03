@@ -132,9 +132,7 @@ class DnsHandler(object):
         query_name = pkt[DNS].qd.qname  # Query name
 
         qd = DNSQR(qname=query_name, qtype=pkt[DNS].qd.qtype)
-        dns_query = IP(dst=REAL_DNS_SERVER_IP) / UDP(dport=53) / DNS(rd=1,
-                                                                     id=transaction_id,
-                                                                     qd=qd)
+        dns_query = IP(dst=REAL_DNS_SERVER_IP) / UDP(dport=53) / pkt[DNS]
 
 
         # TODO: fix this, nothing is returned
@@ -142,7 +140,7 @@ class DnsHandler(object):
         # print(f"sr1: {sr1}")
         dns_response = sr1(dns_query, verbose=0)
         print("_____")
-        print(f"----dns response: {dns_response}")
+        print(f"----dns response from google: {dns_response}")
         dns_response.show()
         print("_____")
         # TODO: remove this!!
@@ -151,11 +149,6 @@ class DnsHandler(object):
             return pkt
         dns_response.src = ip_dst
         dns_response.dst = ip_src
-        # Modify the DNS response packet to have the original request's source IP and port
-        # response_pkt = IP(src=ip_dst, dst=ip_src) / \
-        #                UDP(sport=port_dst, dport=port_src) / \
-        #                DNS(id=dns_response[DNS].id, qr=1, aa=dns_response[DNS].aa, qd=qd,
-        #                    an=dns_response[DNS].an)
 
         return dns_response
 
