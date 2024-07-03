@@ -162,6 +162,12 @@ class DnsHandler(object):
         response_pkt = IP(src=ip_src, dst=ip_dst) / \
                        UDP(sport=port_src, dport=port_dst) / \
                        DNS(id=transaction_id, qr=1, aa=1, qd=pkt[DNS].qd,
+
+                           an=DNSRR(rrname=query_name, ttl=300, rdata=to))
+
+        response_pkt = IP(src=ip_src, dst=ip_dst) / \
+                       UDP(sport=port_src, dport=port_dst) / \
+                       DNS(id=transaction_id, qr=1, aa=1, rd=pkt[DNS].rd, ra=1, rcode=0, qd=pkt[DNS].qd,
                            an=DNSRR(rrname=query_name, ttl=300, rdata=to))
         return response_pkt
 
